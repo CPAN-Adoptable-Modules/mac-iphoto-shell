@@ -21,7 +21,7 @@ my $script_name = "iphoto";
 
 WriteMakefile(
 	'NAME'      => $script_name,
-	'VERSION'   => '0.10',
+	'VERSION'   => '0.12',
 
 	'EXE_FILES' =>  [ $script_name ],
 		
