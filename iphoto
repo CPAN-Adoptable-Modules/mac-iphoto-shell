@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+#$Id$
 use strict;
 use warnings;
 
@@ -93,6 +94,10 @@ Put the selected photos in the trash
 
 Print the shell version
 
+=item view [ import | organize | edit | book ]
+
+Change the view.  The default is "organize", and using any unknown
+view changes it to "organize".
 
 =back
 
@@ -204,7 +209,10 @@ sub view
 	my $current = $view->get;
 	_print_normal( "Current view is $current" );
 	
-	$view->set( to => $next );
+	$view->set( to => enum( $next ) );
+	
+	my $now = $view->get;
+	_print_normal( "View is now $now" );
 	}
 	
 sub version #
