@@ -127,6 +127,7 @@ use File::Spec;
 use FindBin;
 use Mac::Glue qw(:all);
 use Text::ParseWords;
+use UNIVERSAL qw(isa);
 
 my $command = shift @ARGV;
 
@@ -134,23 +135,37 @@ my $iPhoto = Mac::Glue->new( "iPhoto" );
 my $Debug  = 1;
 
 my %Commands = (
-	debug   => sub { &debug           },
-	empty   => sub { &empty_trash     },
-	'exists' => sub { &album_exists    },
-	help    => sub { &help            },
-	make    => sub { &make_albums     },
-	merge   => sub { &merge_albums    },
-	move    => sub { &move_selection  },
-#	prompt  => sub { &set_prompt      },
-	quit    => sub { exit             },
-	'print' => sub { &print_obj       },
-	reload  => sub { &restart_script  }, # broken
-	remove  => sub { &remove_album    },
-#	remove  => sub { &remove_photo    },
-	show    => sub { &show_album      },
-	trash   => sub { &trash_selection },
-	version => sub { &version         },
-	view    => sub { &view            }, # broken
+	debug     => sub { &debug           },
+	empty     => sub { &empty_trash     },
+	'exists'  => sub { &album_exists    },
+	help      => sub { &help            },
+	keyword   => {
+		list   => sub { &keyword_list   },
+		add    => sub { &keyword_add    },
+		remove => sub { &keyword_remove },
+		},
+	make      => sub { &make_albums     },
+	merge     => sub { &merge_albums    },
+	move      => sub { &move_selection  },
+#	prompt    => sub { &set_prompt      },
+	quit      => sub { exit             },
+	'print'   => {
+		album     => sub { &print_album     },
+		albums    => sub { &print_albums    },
+		photo     => sub { &print_photo     },
+		photos    => sub { &print_photos    },
+		selection => sub { &print_selection },
+		view      => sub { &print_view      },
+		},
+	reload    => sub { &restart_script  }, # broken
+	remove    => sub { &remove_album    },
+#	remove    => sub { &remove_photo    },
+	'select'  => sub { &select          },
+	show      => sub { &show_album      },
+	slideshow => sub { &slideshow       }, # broken
+	trash     => sub { &trash_selection },
+	version   => sub { &version         },
+	view      => sub { &view            }, # broken
 	);
 	
 my %Print = (
@@ -182,23 +197,76 @@ sub _shell
 	
 	}
 
+sub _selection
+	{
+	my $selection = $iPhoto->prop( "selection" );
+	
+	unless( defined $selection )
+		{
+		_print_warn( "No photos selected." );
+		return;
+		}
+
+	my $count = $selection->count( each => 'item' );
+	_print_debug( "Selection has $count items" );
+	return $selection;
+	}
+	
+# get command
+# is it a key?
+# are there more arguments?
+	# NO  - is there a null sub? use it
+	# YES - is the value a hash? repeat
+
+
+sub _get_subroutine
+	{
+	my $hash    = \%Commands;
+	my @commands = ();
+		
+	while( 1 )
+		{
+		if( isa( $hash, 'HASH' ) )
+			{
+			if( exists $hash->{ $_[0] } )
+				{
+				$hash = $hash->{ $_[0] };
+				push @commands, shift;
+				redo;
+				}
+			else { last }
+			}
+		else { last }
+		}
+		
+	_print_debug( "commands are @commands" );
+	
+	require Data::Dumper;
+	print Data::Dumper::Dumper( $hash );
+		
+	return ( $hash, @_ );
+	}
+	
 sub _command
 	{
-	my( $command, @args ) = @_;
+	my $original = @_;
+	my( $subroutine, @args ) = _get_subroutine( @_ );
 	
-	if( exists $Commands{ $command } )
+	eval { $subroutine->( @args ) };
+
+	if( $@ )
 		{
-		eval { $Commands{ $command }->( @args ) };
-		if( $@ )
-			{
-			_print_warn( "error in $command: $@" );
-			_print_normal( "continuing" );
-			}
+		_print_warn( "error in $command: $@" );
+		_print_normal( "continuing" );
 		}
-	else
-		{
-		_print_warn( "Command [$command] unknown" );
-		}
+	}
+	
+sub select
+	{
+	my @numbers = @_;
+				
+	$iPhoto->select(	$iPhoto->obj( photo => "every" ) 
+			);
 	}
 
 sub album_exists
@@ -336,28 +404,7 @@ sub merge_albums #
 		$album->remove;		
 		}
 	}
-	
-sub print_obj #
-	{
-	my @args = @_;
-	
-	my $sub = shift @args;
-
-	if( exists $Print{ $sub } )
-		{
-		eval { $Print{ $sub }->( @args ) };
-		if( $@ )
-			{
-			_print_warn( "error in $sub: $@" );
-			_print_normal( "continuing" );
-			}
-		}
-	else
-		{
-		_print_warn( "Command [$sub] unknown" );
-		}
-	}
-	
+		
 sub print_album #
 	{
 	my $albums = $iPhoto->prop( "albums" );
@@ -391,15 +438,8 @@ sub print_albums #
 	
 sub print_photo #
 	{
-	my $selection = $iPhoto->prop( "selection" );
-
-	my $count = $selection->count( each => 'item' );
-	
-	if( $count == 0 )
-		{
-		_print_normal( "No photo selected" );
-		return;
-		}
+	my $selection = _selection();
+	return unless defined $selection;
 		
 	foreach my $photo ( $selection->get )
 		{
@@ -448,10 +488,8 @@ sub print_photos #
 
 sub print_selection #
 	{
-	my $selection = $iPhoto->prop( "selection" );
-
-	my $count = $selection->count( each => 'item' );
-	_print_normal( "Selection has $count photos" );
+	my $selection = _selection();
+	return unless definded $selection;
 
 	foreach my $photo ( $selection->get )
 		{
@@ -490,12 +528,11 @@ sub move_selection #
 		album => whose( name => equals => $name ) 
 		);
 	
-	my $selection = $iPhoto->prop( "selection" );
-	my $current   = $iPhoto->prop( "current album" );
-		
-	my $count = $selection->count( each => 'item' );
-	_print_normal( "Selection has $count photos" );
+	my $selection = _selection;
+	return unless defined $selection;
 	
+	my $current   = $iPhoto->prop( "current album" );
+			
 	foreach my $photo ( $selection->get )
 		{		
 		my $new_photo = _new_photo( $photo );
@@ -506,10 +543,9 @@ sub move_selection #
 
 sub remove_selection
 	{
-	my $selection = $iPhoto->prop( "selection" );
-		
-	my $count = $selection->count( each => 'item' );
-	_print_normal( "Selection has $count photos" );
+	my $selection = _selection;
+	return unless defined $selection;
+
 	my $trash = $iPhoto->prop( "trash album" );
 	
 	foreach my $photo ( $selection->get )
@@ -536,13 +572,8 @@ sub empty_trash #
 		
 sub trash_selection
 	{
-	my $selection = $iPhoto->prop( "selection" );
-	
-	unless( defined $selection )
-		{
-		_print_warn( "No photos selected." );
-		return;
-		}
+	my $selection = _selection;
+	return unless defined $selection;
 	
 	my $count = $selection->count( each => 'item' );
 	_print_normal( "Selection has $count photos" );
@@ -554,6 +585,64 @@ sub trash_selection
 		}
 	}
 
+sub slideshow
+	{
+	my $command = shift;
+	
+	unless( $command =~ m/start|stop/ )
+		{
+		_print_warn( "Use: slideshow [start|stop]" );
+		return;
+		}
+	
+	$command = "${command}_slideshow";
+	$iPhoto->$command;	
+	}
+
+sub keyword
+	{
+	my $selection = _selection();
+	return unless defined $selection;
+
+	my $command  = shift;
+	my @keywords = @_;
+	
+	if( not defined $command or $command eq "list" )
+		{
+		foreach my $photo ( $selection->get )
+			{
+			my $new_photo = _new_photo( $photo );
+
+			my @keywords  = $new_photo->prop( "keyword" )->prop( "name" )->get;
+			my $title     = $new_photo->prop( "title" )->get;
+			
+			local $" = ", ";
+			_print_normal( "$title: @keywords" );
+			}	
+		}
+	elsif( $command eq "add" )
+		{
+		my $keyword = $iPhoto->obj(
+			keyword => whose( name => equals => $keywords[0] )
+			);
+		
+		my $name = $keyword->prop( "name" )->get;
+		
+		_print_normal( "keyword name is $name" );
+			
+		foreach my $photo ( $selection->get )
+			{
+			my $new_photo = _new_photo( $photo );
+			my $title = $new_photo->prop( "name" )->get;
+			_print_debug( "Processing photo: $title keyword: $keywords[0]" );
+			$photo->assign_keyword( string => $keywords[0] );
+			}
+		}
+	elsif( $command eq "remove" )
+		{
+		}
+	}
+	
 sub _print { chomp( my @s = @_ ); my $s = shift @s; for (@s){print "$s $_\n"} }
 
 sub _print_help   { _print( '...', @_ ) }
@@ -561,6 +650,7 @@ sub _print_warn   { _print( '!!!', @_ ) }
 sub _print_debug  { _print( '---', @_ ) }
 sub _print_normal { _print( '+++', @_ ) }
 
+	
 # this is a work around		
 sub _new_photo
 	{
