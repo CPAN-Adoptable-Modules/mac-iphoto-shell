@@ -1,39 +1,41 @@
 # $Id$
 use ExtUtils::MakeMaker;
 
-eval "use Test::Manifest";
+eval "use Test::Manifest 1.14";
 
-unless( $@ )
-	{
-	no warnings;
+sub MY::postamble {
+	<<'MAKE';
+install :: iphoto-shell-install
 	
-	*ExtUtils::MM_Any::test_via_harness = sub
-		{
-		my($self, $perl, $tests) = @_;
-	
-		return qq|	$perl "-MTest::Manifest" | .
-			qq|"-e" "run_t_manifest(\$(TEST_VERBOSE), '\$(INST_LIB)', | .
-			qq|'\$(INST_ARCHLIB)')"\n|;
-		};
+iphoto-shell-install:
+	$(ECHO) "Installing new-iterm symlink to module"
+	/bin/ln -sfv $(INSTALLSITELIB)/Mac/iPhoto/Shell.pm $(INSTALLBIN)/iphoto-shell
+	$(CHMOD) 755 $(INSTALLSITELIB)/Mac/iPhoto/Shell.pm
+MAKE
 	}
 
-my $script_name = "iphoto";
-
 WriteMakefile(
-	'NAME'      => $script_name,
-	'VERSION'   => '0.12',
-
-	'EXE_FILES' =>  [ $script_name ],
+	'NAME'      => 'Mac::iPhoto::Shell',
+	'VERSION'   => '0.13',
+	'LICENSE'	=> 'perl',
 		
 	'PREREQ_PM' => {
 			Mac::Glue => '0',
 			},
 
-	'MAN1PODS'  => {
-		$script_name => "\$(INST_MAN1DIR)/$script_name.1",
+	'PM'           => {
+		'lib/Shell.pm'         => '$(INST_LIBDIR)/Shell.pm',
 		},
 
-	clean => { FILES => "*.bak $script_name-*" },
+	'MAN3PODS'  => {
+		'lib/Shell.pm' => "\$(INST_MAN3DIR)/Mac::iPhoto::Shell.1",
+		},
+
+	'MAN1PODS'  => {
+		'lib/Shell.pm' => "\$(INST_MAN1DIR)/iphoto_shell.1",
+		},
+
+	clean => { FILES => "*.bak Mac-*" },
 	);
         
 1;

@@ -1,12 +1,18 @@
 # $Id$
-.cvsignore
-.DS_Store
-.releaserc
-iphoto-.*
+\.cvsignore
+\.DS_Store
+\.releaserc
+\.tar$
+\.gz$
+\.zip$
+\.tgz$
+Mac-\*
 blib
 CVS
-Makefile.old
+.svn
+\.old$
 Makefile$
-MANIFEST.bak
+\.bak$
 MANIFEST.SKIP
 pm_to_blib
+\.lwpcookies
