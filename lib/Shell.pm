@@ -134,7 +134,8 @@ use Mac::Glue qw(:all);
 use Text::ParseWords;
 use UNIVERSAL qw(isa);
 
-our $VERSION = sprintf "%d.%03d", q$Revision$ =~ m/ (\d+) \. (\d+) /x;
+our $VERSION = 1.15;
+#sprintf "%d.%03d", q$Revision$ =~ m/ (\d+) \. (\d+) /x;
 
 my $command = shift @ARGV;
 

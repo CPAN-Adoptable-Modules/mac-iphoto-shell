@@ -16,11 +16,12 @@ MAKE
 
 WriteMakefile(
 	'NAME'      => 'Mac::iPhoto::Shell',
-	'VERSION'   => '0.14',
+	'VERSION'   => '0.15',
 	'LICENSE'	=> 'perl',
-		
+	'AUTHOR'    => 'brian d foy <bdfoy@cpan.org>',
+	
 	'PREREQ_PM' => {
-			Mac::Glue => '0',
+			Mac::Glue => '1.28',
 			},
 
 	'PM'           => {
