@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!env perl
 
 package Mac::iPhoto::Shell;
 
@@ -122,7 +122,7 @@ brian d foy, C<< <bdfoy@cpan.org> >>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2004-2007, brian d foy, All rights reserved.
+Copyright 2004-2008, brian d foy, All rights reserved.
 
 You may use this program under the same terms as Perl itself.
 
@@ -134,7 +134,7 @@ use Mac::Glue qw(:all);
 use Text::ParseWords;
 use UNIVERSAL qw(isa);
 
-our $VERSION = 1.15;
+our $VERSION = 0.16;
 #sprintf "%d.%03d", q$Revision$ =~ m/ (\d+) \. (\d+) /x;
 
 my $command = shift @ARGV;
@@ -680,3 +680,5 @@ sub _new_photo
 			
 	return $new_photo;
 	}
+
+1;

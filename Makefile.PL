@@ -1,6 +1,14 @@
 # $Id$
 use ExtUtils::MakeMaker;
 
+unless( $^O =~ /darwin/ )
+	{
+	warn "OS unsupported! You need a Mac for this module!\n";
+	exit 0;
+	}
+	
+require 5.006;
+
 eval "use Test::Manifest 1.14";
 
 sub MY::postamble {
@@ -16,6 +24,8 @@ MAKE
 
 WriteMakefile(
 	'NAME'      => 'Mac::iPhoto::Shell',
+	'ABSTRACT'  => 'Play with iPhoto from the command line';
+
 	'VERSION'   => '0.15',
 	'LICENSE'	=> 'perl',
 	'AUTHOR'    => 'brian d foy <bdfoy@cpan.org>',
@@ -55,7 +65,7 @@ if( $@ )
 	if( $path ) 
 		{
 		print <<"HERE";
-To create the Mac::Glue bindings for iTerm you need to run:
+To create the Mac::Glue bindings for iPhoto you need to run:
 
 	sudo gluemac $iterm_path
 
