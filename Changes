@@ -5,6 +5,10 @@
 	* I've converted my iphoto-shell application to a modulino
 	called Mac::iPhoto::Shell
 
+0.16 - Fri Jan 18 04:14:26 2008
+	* Die gracefully in Makefile.PL if not on a Mac
+	* No need to upgrade if you already have this
+
 0.15 - Sun Mar 18 23:12:26 2007
 	* Require the latest Mac::Glue, which has the Intel fixes
 	* No need to upgrade if you already have this installed
