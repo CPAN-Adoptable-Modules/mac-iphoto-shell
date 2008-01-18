@@ -6,7 +6,7 @@ unless( $^O =~ /darwin/ )
 	warn "OS unsupported! You need a Mac for this module!\n";
 	exit 0;
 	}
-	
+
 require 5.006;
 
 eval "use Test::Manifest 1.14";
@@ -14,7 +14,7 @@ eval "use Test::Manifest 1.14";
 sub MY::postamble {
 	<<'MAKE';
 install :: iphoto-shell-install
-	
+
 iphoto-shell-install:
 	$(ECHO) "Installing new-iterm symlink to module"
 	/bin/ln -sfv $(INSTALLSITELIB)/Mac/iPhoto/Shell.pm $(INSTALLBIN)/iphoto-shell
@@ -24,12 +24,11 @@ MAKE
 
 WriteMakefile(
 	'NAME'      => 'Mac::iPhoto::Shell',
-	'ABSTRACT'  => 'Play with iPhoto from the command line';
-
-	'VERSION'   => '0.15',
+	'ABSTRACT'  => 'Play with iPhoto from the command line',
+	'VERSION'   => '0.16',
 	'LICENSE'	=> 'perl',
 	'AUTHOR'    => 'brian d foy <bdfoy@cpan.org>',
-	
+
 	'PREREQ_PM' => {
 			Mac::Glue => '1.28',
 			},
@@ -48,7 +47,7 @@ WriteMakefile(
 
 	clean => { FILES => "*.bak Mac-*" },
 	);
-        
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # An auto installer should already have installed Mac::Glue
 {
@@ -56,13 +55,13 @@ require Mac::Glue;
 
 my $iterm = eval { Mac::Glue->new( 'iPhoto' ) };
 
-if( $@ ) 
+if( $@ )
 	{
 	require Mac::Processes; Mac::Processes->import;
-	
+
 	my $path = LSFindApplicationForInfo( undef, undef, 'iPhoto.app' );
 
-	if( $path ) 
+	if( $path )
 		{
 		print <<"HERE";
 To create the Mac::Glue bindings for iPhoto you need to run:
@@ -75,7 +74,7 @@ HERE
 
 		chomp( my $confirm = <> );
 
-		if( lc( $confirm ) eq 'y' ) 
+		if( lc( $confirm ) eq 'y' )
 			{
 			system 'sudo', 'gluemac', $path;
 			$iterm = eval { Mac::Glue->new( 'iPhoto' ) };
