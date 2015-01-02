@@ -19,6 +19,8 @@ iphoto - a command line shell for iPhoto
 
 THIS IS EXPERIMENTAL SOFTWARE! USE AT YOUR OWN RISK!
 
+IT'S ALSO UNMAINTAINED!
+
 This script provides a shell for iPhoto. Make a backup of your photo
 library, or use a test library, to play with this script.
 
