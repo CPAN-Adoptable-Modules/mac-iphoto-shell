@@ -33,9 +33,9 @@ perldoc directly on the module file.
 
 	perldoc  lib/Shell.pm
 
-This module is also in CVS on SourceForge
+This module is also in GitHub
 
-	http://sourceforge.net/projects/brian-d-foy/
+	https://github.com/CPAN-Adopt-Me/mac-iphoto-shell
 
 
 Enjoy,
