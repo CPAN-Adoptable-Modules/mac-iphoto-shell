@@ -2,7 +2,6 @@
 
 package Mac::iPhoto::Shell;
 
-#$Id$
 use strict;
 use warnings;
 
@@ -22,6 +21,19 @@ iphoto - a command line shell for iPhoto
 =head1 DESCRIPTION
 
 THIS IS EXPERIMENTAL SOFTWARE! USE AT YOUR OWN RISK!
+
+=====================================================================
+             This module is looking for a maintainer!
+
+No one is maintaining this module, but you can take up its care
+and feeding by requesting CPAN persmissions from modules@perl.org.
+
+This version is assigned to the ADOPTME CPAN user and hosted in
+GitHub:
+
+	https://github.com/CPAN-Adopt-Me/mac-iphoto-shell
+
+=====================================================================
 
 This script provides a shell for iPhoto. Make a backup of your photo
 library, or use a test library, to play with this script.
@@ -108,15 +120,24 @@ view changes it to "organize".
 
 =head1 SOURCE AVAILABILITY
 
-This source is part of a SourceForge project which always has the
-latest sources in CVS, as well as all of the previous releases.
+This source is in Github:
 
-	http://sourceforge.net/projects/brian-d-foy/
-
-If, for some reason, I disappear from the world, one of the other
-members of the project can shepherd this module appropriately.
+	https://github.com/CPAN-Adopt-Me/mac-iphoto-shell
 
 =head1 AUTHOR
+
+  =====================================================================
+             This module is looking for a maintainer!
+
+No one is maintaining this module, but you can take up its care
+and feeding by requesting CPAN persmissions from modules@perl.org.
+
+This version is assigned to the ADOPTME CPAN user and hosted in
+GitHub:
+
+	https://github.com/CPAN-Adopt-Me/mac-iphoto-shell
+
+  =====================================================================
 
 brian d foy, C<< <bdfoy@cpan.org> >>
 
@@ -134,7 +155,7 @@ use Mac::Glue qw(:all);
 use Text::ParseWords;
 use UNIVERSAL qw(isa);
 
-our $VERSION = '1.16';
+our $VERSION = '1.17';
 
 my $command = shift @ARGV;
 
