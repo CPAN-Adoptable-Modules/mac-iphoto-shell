@@ -2,8 +2,7 @@ use ExtUtils::MakeMaker;
 
 unless( $^O =~ /darwin/ )
 	{
-	warn "OS unsupported! You need a Mac for this module!\n";
-	exit 0;
+	die "OS unsupported! You need a Mac for this module!\n";
 	}
 
 print <<'HERE';
@@ -12,6 +11,7 @@ print <<'HERE';
 
 No one is maintaining this module, but you can take up its care
 and feeding by requesting CPAN persmissions from modules@perl.org.
+
 This version is assigned to the ADOPTME CPAN user and hosted in
 GitHub:
 
@@ -22,7 +22,6 @@ HERE
 
 
 require 5.006;
-
 
 sub MY::postamble {
 	<<'MAKE';
@@ -43,11 +42,7 @@ WriteMakefile(
 	'AUTHOR'    => 'brian d foy <bdfoy@cpan.org>',
 
 	'PREREQ_PM' => {
-			Mac::Glue => '1.28',
-			},
-
-	'PM'           => {
-		'lib/Shell.pm'         => '$(INST_LIBDIR)/Shell.pm',
+		Mac::Glue => '1.28',
 		},
 
 	'META_MERGE' => {
