@@ -9,7 +9,6 @@ unless( $^O =~ /darwin/ )
 
 require 5.006;
 
-eval "use Test::Manifest 1.14";
 
 sub MY::postamble {
 	<<'MAKE';
