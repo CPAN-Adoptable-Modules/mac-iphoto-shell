@@ -50,12 +50,15 @@ WriteMakefile(
 		'lib/Shell.pm'         => '$(INST_LIBDIR)/Shell.pm',
 		},
 
-	'MAN3PODS'  => {
-		'lib/Shell.pm' => "\$(INST_MAN3DIR)/Mac::iPhoto::Shell.1",
-		},
-
-	'MAN1PODS'  => {
-		'lib/Shell.pm' => "\$(INST_MAN1DIR)/iphoto_shell.1",
+	'META_MERGE' => {
+		'meta-spec' => { version => 2 },
+		resources => {
+			repository => {
+				type => 'git',
+				url  => 'https://github.com/CPAN-Adopt-Me/mac-iphoto-shell',
+				web  => 'https://github.com/CPAN-Adopt-Me/mac-iphoto-shell',
+				},
+			},
 		},
 
 	clean => { FILES => "*.bak Mac-*" },
